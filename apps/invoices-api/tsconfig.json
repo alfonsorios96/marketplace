@@ -1,6 +1,7 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
+    "types": ["node", "express", "multer", "jest"],
     "module": "commonjs",
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
