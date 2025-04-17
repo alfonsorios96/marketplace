@@ -29,7 +29,7 @@ coverage
 out/
 build
 dist
-
+apps/**/*.js
 
 # Debug
 npm-debug.log*
@@ -39,3 +39,6 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Statics
+uploads/
