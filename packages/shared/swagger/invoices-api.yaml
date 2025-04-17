@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+  title: Invoices API
+  version: 1.0.0
+  description: API for managing invoice documents and shipment tracking
+servers:
+  - url: http://localhost:3003/v1/invoices
+    description: Local development
+
+tags:
+  - name: Invoices
+    description: Invoice management operations
+
+paths:
+  /:
+    post:
+      tags: [Invoices]
+      summary: Upload invoice PDF for an order
+      operationId: uploadInvoice
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateInvoice'
+      responses:
+        '201':
+          description: Invoice successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid input or file format
+
+  /{orderId}:
+    get:
+      tags: [Invoices]
+      summary: Get invoice by order ID
+      operationId: getInvoiceByOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: order_123
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: Invoice not found
+
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+          example: inv_456
+        order_id:
+          type: string
+          example: order_123
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2025-04-17T05:15:00Z
+        file:
+          type: object
+          properties:
+            originalname:
+              type: string
+              example: invoice_123.pdf
+            mimetype:
+              type: string
+              example: application/pdf
+            size:
+              type: integer
+              example: 123456
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-04-17T04:43:00Z
+      required:
+        - invoice_id
+        - order_id
+        - created_at
+
+    CreateInvoice:
+      type: object
+      properties:
+        order_id:
+          type: string
+          example: order_123
+        file:
+          type: string
+          format: binary
+          description: PDF invoice file
+      required:
+        - order_id
+        - file
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
