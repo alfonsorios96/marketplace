@@ -13,16 +13,20 @@ let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
     }
-    getHello() {
-        return this.appService.getHello();
+    async healthCheck() {
+        const dbReady = this.appService.isDbConnected();
+        return {
+            status: dbReady ? 'OK' : 'ERROR',
+            timestamp: new Date().toISOString(),
+        };
     }
 };
 __decorate([
-    Get(),
+    Get('health'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "getHello", null);
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "healthCheck", null);
 AppController = __decorate([
     Controller(),
     __metadata("design:paramtypes", [AppService])

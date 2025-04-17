@@ -2,10 +2,11 @@ import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix('v1');
     const externalSwaggerDoc = load(readFileSync(join(__dirname, '../../../packages/shared/swagger/orders-api.yaml'), 'utf8'));
     const config = new DocumentBuilder()
         .setTitle('Orders API')

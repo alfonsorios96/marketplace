@@ -5,15 +5,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-let AppModule = class AppModule {
+import { MongooseModule } from '@nestjs/mongoose';
+import { Order, OrderSchema } from './order.schema';
+import { OrdersController } from './orders.controller';
+import { OrdersService } from './orders.service';
+let OrdersModule = class OrdersModule {
 };
-AppModule = __decorate([
+OrdersModule = __decorate([
     Module({
-        imports: [],
-        controllers: [AppController],
-        providers: [AppService],
+        imports: [
+            MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+        ],
+        controllers: [OrdersController],
+        providers: [OrdersService],
     })
-], AppModule);
-export { AppModule };
+], OrdersModule);
+export { OrdersModule };

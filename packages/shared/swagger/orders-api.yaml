@@ -81,8 +81,9 @@ paths:
         '404':
           description: Order not found
 
+  /{id}/status:
     patch:
-      tags: [Orders]
+      tags: [ Orders ]
       summary: Update order status
       operationId: updateOrderStatus
       parameters:

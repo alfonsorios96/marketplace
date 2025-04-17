@@ -3,12 +3,14 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('v1');
 
   const externalSwaggerDoc = load(
     readFileSync(
