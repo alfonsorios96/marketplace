@@ -21,6 +21,9 @@ coverage
 # Vercel
 .vercel
 
+# JetBrains
+.idea
+
 # Build Outputs
 .next/
 out/
