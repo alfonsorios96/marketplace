@@ -3,9 +3,10 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +39,18 @@ async function bootstrap() {
     explorer: true,
   });
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://guest:guest@localhost:5672'],
+      queue: 'order_shipped_queue',
+      queueOptions: {
+        durable: true
+      }
+    }
+  });
+
+  await app.startAllMicroservices();
   await app.listen(3003);
 }
 bootstrap();

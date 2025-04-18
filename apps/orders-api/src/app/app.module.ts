@@ -12,7 +12,7 @@ import { AppService } from './app.service';
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('MONGODB_URI'),
-        dbName: 'marketplace',
+        dbName: config.get<string>('MONGODB_NAME'),
       }),
       inject: [ConfigService],
     }),

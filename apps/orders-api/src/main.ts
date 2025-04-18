@@ -3,9 +3,11 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { RmqOptions } from '@nestjs/microservices';
+
+import { AppModule } from './app/app.module';
+import { rabbitMQConfig } from "./rabbitmq.options";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +40,9 @@ async function bootstrap() {
     explorer: true,
   });
 
+  app.connectMicroservice<RmqOptions>(rabbitMQConfig());
+
+  await app.startAllMicroservices();
   await app.listen(3002);
 }
 bootstrap();

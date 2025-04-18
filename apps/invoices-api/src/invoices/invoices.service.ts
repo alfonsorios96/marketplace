@@ -30,4 +30,12 @@ export class InvoicesService {
   async findByOrder(orderId: string) {
     return this.invoiceModel.findOne({ order_id: orderId }).exec();
   }
+
+  async markInvoiceAsSent(orderId: string) {
+    return this.invoiceModel.findOneAndUpdate(
+        { order_id: orderId },
+        { sent_at: new Date() },
+        { new: true }
+    ).exec();
+  }
 }
