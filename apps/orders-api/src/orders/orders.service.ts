@@ -26,11 +26,11 @@ export class OrdersService {
   async findAll(sellerId: string, status?: string): Promise<Order[]> {
     const query: Record<string, string> = { seller_id: sellerId };
     if (status) query.status = status;
-    return this.orderModel.find(query).exec();
+    return this.orderModel.find(query);
   }
 
   async findOne(id: string): Promise<Order> {
-    return this.orderModel.findById(id).exec();
+    return this.orderModel.findById(id);
   }
 
   async updateStatus(id: string, newStatus: OrderStatus): Promise<Order> {
@@ -52,11 +52,10 @@ export class OrdersService {
     });
 
     return this.orderModel
-      .findByIdAndUpdate(id, { status: newStatus }, { new: true })
-      .exec();
+      .findByIdAndUpdate(id, { status: newStatus }, { new: true });
   }
 
-  private async publish(key:string, data: { order_id: string }): Promise<void> {
+  async publish(key:string, data: { order_id: string }): Promise<void> {
     await firstValueFrom(
         this.clientProxy.emit(key, data).pipe(
             catchError((exception: Error) => {
