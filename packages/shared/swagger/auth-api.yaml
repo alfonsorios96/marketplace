@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  version: 1.0.0
+  description: |
+    API for simulating authentication via JWT in a microservice architecture.
+    It generates fake users and allows clients to request a JWT based on a userId.
+servers:
+  - url: http://localhost:3005/auth
+    description: Local development
+
+tags:
+  - name: Auth
+    description: Operations related to authentication
+
+paths:
+  /users:
+    get:
+      tags: [Auth]
+      summary: List available fake users
+      operationId: listUsers
+      responses:
+        '200':
+          description: List of fake users generated at startup
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /login:
+    post:
+      tags: [Auth]
+      summary: Generate a JWT token from a fake userId
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6Ikp...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 31dfbaf7-f3d0-4b6e-8ed2-d0240be6a3e5
+        name:
+          type: string
+          example: Ana Fernández
+        email:
+          type: string
+          format: email
+          example: ana.fernandez@example.es
+        country:
+          type: string
+          enum: [España, Deutschland]
+          example: España
+        role:
+          type: string
+          enum: [customer, seller]
+          example: customer
+      required:
+        - id
+        - name
+        - email
+        - country
+        - role
+
+    LoginRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: 31dfbaf7-f3d0-4b6e-8ed2-d0240be6a3e5
+      required:
+        - userId
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
