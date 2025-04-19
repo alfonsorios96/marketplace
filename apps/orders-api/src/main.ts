@@ -3,14 +3,18 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
 import { RmqOptions } from '@nestjs/microservices';
 
-import { rabbitMQConfig } from "@repo/shared";
+import { getRabbitMQConfig } from "@repo/shared";
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const PORT = process.env.PORT || 3002;
+  const RABBITMQ_URL = process.env.RABBITMQ_URL;
+  const RABBITMQ_QUEUE = process.env.RABBITMQ_QUEUE;
+
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('v1');
@@ -22,28 +26,14 @@ async function bootstrap() {
     ),
   ) as Record<string, any>;
 
-  const config = new DocumentBuilder()
-    .setTitle('Orders API')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  const mergedDocument = {
-    ...document,
-    ...externalSwaggerDoc,
-    paths: { ...document.paths, ...externalSwaggerDoc.paths },
-    components: { ...document.components, ...externalSwaggerDoc.components },
-  };
-
-  SwaggerModule.setup('api', app, mergedDocument, {
+  SwaggerModule.setup('api', app, externalSwaggerDoc as OpenAPIObject, {
     customSiteTitle: 'Orders API Documentation',
     explorer: true,
   });
 
-  app.connectMicroservice<RmqOptions>(rabbitMQConfig());
+  app.connectMicroservice<RmqOptions>(getRabbitMQConfig(RABBITMQ_URL, RABBITMQ_QUEUE));
 
   await app.startAllMicroservices();
-  await app.listen(3002);
+  await app.listen(PORT);
 }
 bootstrap();

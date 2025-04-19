@@ -9,9 +9,11 @@ import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../../', 'uploads', 'invoices'),
+      rootPath: join(__dirname, '../../', 'uploads', 'invoices'),
       serveRoot: '/files/invoices',
     }),
     MongooseModule.forRootAsync({

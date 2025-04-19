@@ -54,7 +54,7 @@ export class OrdersService {
       .findByIdAndUpdate(id, { status: newStatus }, { new: true });
   }
 
-  async publish(key:string, data: { order_id: string }): Promise<void> {
+  async publish(key:string, data: { order_id: string }): Promise<any> {
     await firstValueFrom(
         this.clientProxy.emit(key, data).pipe(
             catchError((exception: Error) => {

@@ -1,33 +1,27 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { Order, OrderSchema } from '@repo/shared';
+import { Order, OrderSchema, getRabbitMQConfig } from '@repo/shared';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
+import { ClientProxy, ClientProxyFactory } from "@nestjs/microservices";
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
   ],
   controllers: [OrdersController],
   providers: [OrdersService, {
     provide: 'ORDER_EMITTER',
-    useFactory: (): ClientProxy => {
-      return ClientProxyFactory.create({
-        transport: Transport.RMQ,
-        options: {
-          urls: [`amqp://guest:guest@localhost:5672`],
-          queue: 'order_shipped_queue',
-          queueOptions: {
-            durable: true,
-          },
-          socketOptions: {
-            heartbeatIntervalInSeconds: 60,
-            reconnectTimeInSeconds: 5,
-          },
-        },
-      });
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService): ClientProxy => {
+      return ClientProxyFactory.create(
+        getRabbitMQConfig(
+          configService.get('RABBITMQ_URL'),
+          configService.get('RABBITMQ_QUEUE')
+        ));
     },
   }],
 })

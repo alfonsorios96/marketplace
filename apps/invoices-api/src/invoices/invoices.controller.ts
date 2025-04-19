@@ -8,11 +8,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { InvoicesService } from './invoices.service';
+import { ApiTags } from '@nestjs/swagger';
+
 import { UploadInvoiceDto } from '@repo/shared';
+
+import { InvoicesService } from './invoices.service';
 import { multerConfig } from '../../multer.config';
 import { Express } from 'express';
 
+@ApiTags('Invoices')
 @Controller('invoices')
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
