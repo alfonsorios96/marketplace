@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Invoice, InvoiceSchema } from './invoice.schema';
+import { Invoice, InvoiceSchema } from '@repo/shared';
 import { InvoicesController } from './invoices.controller';
 import { InvoicesService } from './invoices.service';
 import { InvoicesListener } from "./invoices.listener";

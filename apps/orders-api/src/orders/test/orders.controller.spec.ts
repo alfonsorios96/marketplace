@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './create-order.dto';
-import { UpdateOrderStatusDto } from './update-order-status.dto';
-import { OrderStatus } from './order.schema';
+import { OrdersController } from '../orders.controller';
+import { OrdersService } from '../orders.service';
+import { CreateOrderDto, UpdateOrderStatusDto, OrderStatus } from '@repo/shared';
 
 describe('OrdersController', () => {
     let controller: OrdersController;

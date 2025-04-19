@@ -8,9 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './create-order.dto';
-import { UpdateOrderStatusDto } from './update-order-status.dto';
-import { OrderStatus } from './order.schema';
+import { OrderStatus, CreateOrderDto, UpdateOrderStatusDto } from '@repo/shared';
 
 @Controller('orders')
 export class OrdersController {

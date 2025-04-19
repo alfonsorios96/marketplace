@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ClientProxy } from '@nestjs/microservices';
-import { OrdersService } from './orders.service';
-import { Order, OrderStatus } from './order.schema';
-import { CreateOrderDto } from './create-order.dto';
+import { OrdersService } from '../orders.service';
+import { Order, OrderStatus, CreateOrderDto } from '@repo/shared';
 
 describe('OrdersService', () => {
   let service: OrdersService;

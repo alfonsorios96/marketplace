@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InvoicesService } from './invoices.service';
-import { UploadInvoiceDto } from './upload-invoice.dto';
+import { UploadInvoiceDto } from '@repo/shared';
 import { multerConfig } from '../../multer.config';
 import { Express } from 'express';
 

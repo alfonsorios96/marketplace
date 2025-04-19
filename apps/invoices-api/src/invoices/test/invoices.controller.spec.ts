@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { InvoicesController } from './invoices.controller';
-import { InvoicesService } from './invoices.service';
-import { UploadInvoiceDto } from './upload-invoice.dto';
+import { InvoicesController } from '../invoices.controller';
+import { InvoicesService } from '../invoices.service';
+import { UploadInvoiceDto } from '@repo/shared';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 

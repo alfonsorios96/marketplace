@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Express } from 'express';
-import { Invoice, InvoiceDocument } from './invoice.schema';
+import { Invoice, InvoiceDocument } from '@repo/shared';
 
 @Injectable()
 export class InvoicesService {

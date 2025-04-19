@@ -5,9 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
-import { InvoicesModule } from '../invoices/invoices.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -26,7 +24,5 @@ import { AppService } from './app.service';
     }),
     InvoicesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

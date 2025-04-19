@@ -6,8 +6,9 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { RmqOptions } from '@nestjs/microservices';
 
-import { AppModule } from './app/app.module';
-import { rabbitMQConfig } from "./rabbitmq.options";
+import { rabbitMQConfig } from "@repo/shared";
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

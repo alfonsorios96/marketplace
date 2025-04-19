@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { InvoicesService } from './invoices.service';
-import { Invoice } from './invoice.schema';
+import { InvoicesService } from '../invoices.service';
+import { Invoice } from '@repo/shared';
 import { Express } from 'express';
 
 describe('InvoicesService', () => {

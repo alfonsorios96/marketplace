@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { Order, OrderSchema } from './order.schema';
+import { Order, OrderSchema } from '@repo/shared';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import {ClientProxy, ClientProxyFactory, Transport} from "@nestjs/microservices";

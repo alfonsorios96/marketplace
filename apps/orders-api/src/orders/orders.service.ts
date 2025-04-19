@@ -4,8 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { Model } from 'mongoose';
 
-import { Order, OrderDocument, OrderStatus } from './order.schema';
-import { CreateOrderDto } from './create-order.dto';
+import { Order, OrderDocument, OrderStatus, CreateOrderDto } from '@repo/shared';
 
 @Injectable()
 export class OrdersService {
