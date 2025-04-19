@@ -3,13 +3,16 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=orders-api,invoices-api",
     "lint": "turbo run lint",
+    "test:e2e": "turbo run test:e2e",
+    "test:e2e:ci": "docker-compose -f docker-compose.ci.yml up -d && npm run test:e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "validate:contracts": "swagger-cli validate packages/shared/swagger/*.yaml"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.5.3",
     "turbo": "^2.5.0",
     "typescript": "4.9.5"

@@ -30,6 +30,7 @@ out/
 build
 dist
 apps/**/*.js
+test/**/*.js
 
 # Debug
 npm-debug.log*

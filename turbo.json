@@ -15,6 +15,15 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test:e2e": {
+      "cache": false,
+      "inputs": [
+        "test/**/*.ts",
+        "apps/**/*.ts",
+        "packages/shared/**/*.ts"
+      ],
+      "outputs": []
     }
   }
 }
