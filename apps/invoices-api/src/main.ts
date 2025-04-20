@@ -3,19 +3,18 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
-import { RmqOptions } from '@nestjs/microservices';
 import { SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
 
-import { getRabbitMQConfig } from "@repo/shared";
-
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 3003;
-  const RABBITMQ_URL = process.env.RABBITMQ_URL;
-  const RABBITMQ_QUEUE = process.env.RABBITMQ_QUEUE;
-
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
+  const RABBITMQ_URL = configService.get<string>('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672');
+  const RABBITMQ_QUEUE = configService.get<string>('RABBITMQ_QUEUE', 'order_shipped_queue');
+  const PORT = configService.get<number>('PORT', 3003);
 
   app.setGlobalPrefix('v1');
 
@@ -31,9 +30,6 @@ async function bootstrap() {
     explorer: true,
   });
 
-  app.connectMicroservice<RmqOptions>(getRabbitMQConfig(RABBITMQ_URL, RABBITMQ_QUEUE));
-
-  await app.startAllMicroservices();
   await app.listen(PORT);
 }
 bootstrap();

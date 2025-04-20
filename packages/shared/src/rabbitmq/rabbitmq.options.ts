@@ -5,12 +5,9 @@ export const getRabbitMQConfig = (url: string, queue: string): RmqOptions => ({
     options: {
         urls: [url],
         queue: queue,
-        queueOptions: {
-            durable: true
-        },
-        socketOptions: {
-            heartbeatIntervalInSeconds: 60,
-            reconnectTimeInSeconds: 5,
-        },
+        queueOptions: { durable: false },
+        exchange: 'orders_exchange',
+        noAck: false,
+        routingKey: 'order.shipped'
     }
 });

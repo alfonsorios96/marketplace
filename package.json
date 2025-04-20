@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev --filter=orders-api,invoices-api",
     "lint": "turbo run lint",
-    "test:e2e": "turbo run test:e2e",
+    "test:e2e": "jest --config jest-e2e.config.json",
     "test:e2e:ci": "docker-compose -f docker-compose.ci.yml up -d && npm run test:e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",

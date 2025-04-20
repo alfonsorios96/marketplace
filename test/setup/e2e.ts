@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { OrdersModule } from 'orders-api/dist/orders/orders.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { InvoicesModule } from 'invoices-api/dist/src/invoices/invoices.module';
 
 let mongoServer: MongoMemoryServer;
@@ -17,7 +16,7 @@ export async function setupE2EEnvironment(): Promise<{ordersApp: INestApplicatio
       systemBinary: undefined,
     },
     instance: {
-      dbName: 'shared_test'
+      dbName: 'orders_test'
     },
   });
   const mongoUri = mongoServer.getUri();
@@ -30,14 +29,6 @@ async function startMicroservices(mongoUri: string) {
     imports: [
       OrdersModule,
       MongooseModule.forRoot(mongoUri, { dbName: 'orders_test' }),
-      ClientsModule.register([{
-        name: 'INVOICES_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'invoices_queue',
-        }
-      }])
     ],
   }).compile();
 
@@ -47,12 +38,14 @@ async function startMicroservices(mongoUri: string) {
   const invoicesModule = await Test.createTestingModule({
     imports: [
       InvoicesModule,
-      MongooseModule.forRoot(mongoUri, { dbName: 'invoices_test' }),
+      MongooseModule.forRoot(mongoUri, { dbName: 'orders_test' }),
     ],
   }).compile();
 
   invoicesApp = invoicesModule.createNestApplication();
   await invoicesApp.init();
+
+  await new Promise((res) => setTimeout(res, 500));
 
   return {
     ordersApp,

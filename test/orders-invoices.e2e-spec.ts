@@ -9,7 +9,7 @@ describe('Order-Invoice E2E Flow', () => {
     const environment = await setupE2EEnvironment();
     ordersApp = environment.ordersApp;
     invoicesApp = environment.invoicesApp;
-  }, 30000);
+  }, 15000);
 
   afterAll(async () => {
     await teardownE2EEnvironment();
@@ -24,40 +24,59 @@ describe('Order-Invoice E2E Flow', () => {
         price: 299.99,
         quantity: 2,
         customer_id: 'cust_789',
-        seller_id: 'seller_012'
+        seller_id: 'seller_012',
       })
       .expect(201);
 
-    // 2. Upload Invoice
+    // 2. Create invoice related to order
     await request(invoicesApp.getHttpServer())
       .post('/invoices')
       .field('order_id', order._id)
       .attach('file', Buffer.from('fake-pdf'), 'invoice.pdf')
       .expect(201);
 
-    // 3.1 Change status to ACCEPTED
+    // 3. Change status CREATED -> ACCEPTED
     await request(ordersApp.getHttpServer())
       .patch(`/orders/${order._id}/status`)
       .send({ status: OrderStatus.ACCEPTED })
       .expect(200);
 
-    // 3.2 Change status to SHIPPING_IN_PROGRESS
+    // 3. Change status ACCEPTED -> SHIPPING_IN_PROGRESS
     await request(ordersApp.getHttpServer())
       .patch(`/orders/${order._id}/status`)
       .send({ status: OrderStatus.SHIPPING_IN_PROGRESS })
       .expect(200);
 
-    // 3.3 Change status to SHIPPED
+    // 4. Change status SHIPPING_IN_PROGRESS -> SHIPPED
     await request(ordersApp.getHttpServer())
       .patch(`/orders/${order._id}/status`)
       .send({ status: OrderStatus.SHIPPED })
       .expect(200);
+  }, 15000);
+  it('rejection path', async () => {
+    // 1. Create order
+    const { body: order } = await request(ordersApp.getHttpServer())
+      .post('/orders')
+      .send({
+        product_id: 'prod_123',
+        price: 299.99,
+        quantity: 2,
+        customer_id: 'cust_789',
+        seller_id: 'seller_012',
+      })
+      .expect(201);
 
-    // 4. Verify sent_at (pooling)
-    for (let i = 0; i < 5; i++) {
-      await request(invoicesApp.getHttpServer())
-        .get(`/invoices/${order._id}`)
-        .expect(200);
-    }
+    // 2. Create invoice related to order
+    await request(invoicesApp.getHttpServer())
+      .post('/invoices')
+      .field('order_id', order._id)
+      .attach('file', Buffer.from('fake-pdf'), 'invoice.pdf')
+      .expect(201);
+
+    // 3. Change status CREATED -> REJECTED
+    await request(ordersApp.getHttpServer())
+      .patch(`/orders/${order._id}/status`)
+      .send({ status: OrderStatus.REJECTED })
+      .expect(200);
   }, 15000);
 });

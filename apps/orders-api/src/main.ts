@@ -4,16 +4,11 @@ import { join } from 'path';
 
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, OpenAPIObject } from '@nestjs/swagger';
-import { RmqOptions } from '@nestjs/microservices';
-
-import { getRabbitMQConfig } from "@repo/shared";
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 3002;
-  const RABBITMQ_URL = process.env.RABBITMQ_URL;
-  const RABBITMQ_QUEUE = process.env.RABBITMQ_QUEUE;
 
   const app = await NestFactory.create(AppModule);
 
@@ -31,9 +26,6 @@ async function bootstrap() {
     explorer: true,
   });
 
-  app.connectMicroservice<RmqOptions>(getRabbitMQConfig(RABBITMQ_URL, RABBITMQ_QUEUE));
-
-  await app.startAllMicroservices();
   await app.listen(PORT);
 }
 bootstrap();

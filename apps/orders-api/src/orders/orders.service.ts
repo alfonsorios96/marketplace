@@ -1,17 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientProxy } from '@nestjs/microservices';
-import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Model } from 'mongoose';
 
 import { Order, OrderDocument, OrderStatus, CreateOrderDto } from '@repo/shared';
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
-    @Inject('ORDER_EMITTER')
-    private readonly clientProxy: ClientProxy,
+    private readonly amqpConnection: AmqpConnection
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -46,21 +46,13 @@ export class OrdersService {
       );
     }
 
-    await this.publish('order.shipped', {
-      order_id: id,
-    });
+    if(newStatus === OrderStatus.SHIPPED) {
+      await this.amqpConnection.publish('orders_exchange', 'order.shipped', {
+        order_id: id,
+      });
+    }
 
     return this.orderModel
       .findByIdAndUpdate(id, { status: newStatus }, { new: true });
-  }
-
-  async publish(key:string, data: { order_id: string }): Promise<any> {
-    await firstValueFrom(
-        this.clientProxy.emit(key, data).pipe(
-            catchError((exception: Error) => {
-              return throwError(() => new Error(exception.message));
-            }),
-        ),
-    );
   }
 }
