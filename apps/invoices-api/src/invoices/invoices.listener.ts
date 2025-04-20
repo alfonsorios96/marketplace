@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { OrderEvents, OrderExchanges, OrderQueus } from '@repo/shared';
 
 @Injectable()
 export class InvoicesListener {
@@ -11,12 +12,12 @@ export class InvoicesListener {
     }
 
     @RabbitSubscribe({
-        exchange: 'orders_exchange',
-        routingKey: 'order.shipped',
-        queue: 'order_shipped_queue',
+        exchange: OrderExchanges.DEFAULT,
+        routingKey: OrderEvents.SHIPPED,
+        queue: OrderQueus.SHIPPED,
     })
     async handleOrderShipped(message: { order_id: string }) {
-        this.logger.log(`📦 order.shipped received: ${JSON.stringify(message)}`);
+        this.logger.log(`📦 ${OrderEvents.SHIPPED} received: ${JSON.stringify(message)}`);
         await this.invoicesService.markInvoiceAsSent(message.order_id);
     }
 }

@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ClientProxy } from '@nestjs/microservices';
 import { OrdersService } from '../orders.service';
 import { Order, OrderStatus, CreateOrderDto } from '@repo/shared';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ConfigService } from '@nestjs/config';
+
 
 describe('OrdersService', () => {
   let service: OrdersService;
   let orderModel: Model<Order>;
-  let clientProxy: ClientProxy;
 
   const mockOrder = {
     _id: 'order_123',
@@ -20,13 +21,18 @@ describe('OrdersService', () => {
     seller_id: 'seller_012',
   };
 
-  class MockOrderModel {
-    constructor() {};
-    save = jest.fn().mockResolvedValue({...mockOrder, status: OrderStatus.CREATED});
-    static find = jest.fn().mockResolvedValue([mockOrder]);
-    static findById = jest.fn().mockResolvedValue(mockOrder);
-    static findByIdAndUpdate = jest.fn().mockResolvedValue(mockOrder);
-  }
+  const mockSave = jest.fn().mockResolvedValue({
+    ...mockOrder,
+    status: OrderStatus.CREATED,
+  });
+
+  const mockOrderModel = jest.fn().mockImplementation(() => ({
+    save: mockSave,
+  }));
+
+  (mockOrderModel as any).find = jest.fn().mockResolvedValue([mockOrder]);
+  (mockOrderModel as any).findById = jest.fn().mockResolvedValue(mockOrder);
+  (mockOrderModel as any).findByIdAndUpdate = jest.fn().mockResolvedValue(mockOrder);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,23 +40,25 @@ describe('OrdersService', () => {
         OrdersService,
         {
           provide: getModelToken(Order.name),
-          useValue: MockOrderModel,
+          useValue: mockOrderModel,
         },
         {
-          provide: 'ORDER_EMITTER',
+          provide: AmqpConnection,
           useValue: {
-            emit: jest.fn().mockReturnValue({
-              pipe: jest.fn().mockReturnThis(),
-              subscribe: jest.fn(),
-            }),
+            publish: jest.fn(),
           },
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn(),
+          },
+        }
       ],
     }).compile();
 
     service = module.get<OrdersService>(OrdersService);
     orderModel = module.get<Model<Order>>(getModelToken(Order.name));
-    clientProxy = module.get<ClientProxy>('ORDER_EMITTER');
   });
 
   describe('create()', () => {
@@ -86,20 +94,7 @@ describe('OrdersService', () => {
     it('should reject an invalid transition SHIPPING_IN_PROGRESS → ACCEPTED', async () => {
       await expect(
           service.updateStatus('order_123', OrderStatus.ACCEPTED)
-      ).rejects.toThrow('Invalid status transition');
-    });
-  });
-
-  describe('publish()', () => {
-    it('should handler errors on emit', async () => {
-      const error = new Error('RabbitMQ error');
-      jest.spyOn(clientProxy, 'emit').mockImplementationOnce(() => {
-        throw error;
-      });
-
-      await expect(
-          service.updateStatus('order_123', OrderStatus.SHIPPED)
-      ).rejects.toThrow(error.message);
+      ).rejects.toThrow('Cannot change status from SHIPPING_IN_PROGRESS to ACCEPTED');
     });
   });
 });

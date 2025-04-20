@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
-import { Order, OrderSchema } from '@repo/shared';
+import { Order, OrderExchanges, OrderSchema } from '@repo/shared';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 
@@ -16,7 +16,7 @@ import { OrdersService } from './orders.service';
       uri: 'amqp://guest:guest@localhost:5672',
       exchanges: [
         {
-          name: 'orders_exchange',
+          name: OrderExchanges.DEFAULT,
           type: 'topic',
         },
       ],

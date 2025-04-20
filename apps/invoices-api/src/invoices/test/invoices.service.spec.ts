@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { InvoicesService } from '../invoices.service';
 import { Invoice } from '@repo/shared';
 import { Express } from 'express';
+import { NotFoundException } from '@nestjs/common';
 
 describe('InvoicesService', () => {
     let service: InvoicesService;
@@ -66,8 +67,10 @@ describe('InvoicesService', () => {
 
         it('should get null if not exist', async () => {
             jest.spyOn(invoiceModel, 'findOne').mockResolvedValueOnce(null);
-            const result = await service.findByOrder('order_999');
-            expect(result).toBeNull();
+
+            await expect(
+              service.findByOrder('order_999'),
+            ).rejects.toThrow(NotFoundException);
         });
     });
 

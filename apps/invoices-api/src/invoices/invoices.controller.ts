@@ -5,7 +5,7 @@ import {
   Param,
   Post,
   UploadedFile,
-  UseInterceptors,
+  UseInterceptors, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
@@ -34,6 +34,7 @@ export class InvoicesController {
   }
 
   @Get(':orderId')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async getByOrder(@Param('orderId') orderId: string) {
     return this.invoicesService.findByOrder(orderId);
   }

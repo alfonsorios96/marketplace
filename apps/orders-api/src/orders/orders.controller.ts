@@ -1,32 +1,46 @@
 import {
-  Body,
   Controller,
-  Get,
-  Param,
-  Patch,
   Post,
+  Get,
+  Patch,
+  Body,
+  Param,
   Query,
+  ValidationPipe,
+  ParseEnumPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 
-import { OrderStatus, CreateOrderDto, UpdateOrderStatusDto } from '@repo/shared';
+import {
+  OrderStatus,
+  CreateOrderDto,
+  UpdateOrderStatusDto,
+} from '@repo/shared';
 
 import { OrdersService } from './orders.service';
 
-@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() createOrderDto: CreateOrderDto) {
+  async create(
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+      createOrderDto: CreateOrderDto,
+  ) {
     return this.ordersService.create(createOrderDto);
   }
 
   @Get()
   async findAll(
-    @Query('seller_id') sellerId: string,
-    @Query('status') status?: string,
+    @Query('seller_id', new ValidationPipe({ whitelist: true }))
+      sellerId: string,
+    @Query('status', new ParseEnumPipe(OrderStatus))
+      status?: OrderStatus,
   ) {
     return this.ordersService.findAll(sellerId, status);
   }
@@ -39,7 +53,13 @@ export class OrdersController {
   @Patch(':id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+      updateOrderStatusDto: UpdateOrderStatusDto,
   ) {
     return this.ordersService.updateStatus(
       id,

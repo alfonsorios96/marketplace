@@ -11,6 +11,18 @@ export enum OrderStatus {
     SHIPPED = 'SHIPPED',
 }
 
+export enum OrderEvents {
+    SHIPPED = 'order.shipped',
+}
+
+export enum OrderExchanges {
+    DEFAULT = 'orders_exchange',
+}
+
+export enum OrderQueus {
+    SHIPPED = 'order_shipped_queue',
+}
+
 @Schema({ timestamps: true })
 export class Order {
     @Prop({ required: true })

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class UploadInvoiceDto {
   @ApiProperty({ type: 'string', format: 'binary', description: 'PDF file' })
-  file: any;
+  file!: Express.Multer.File;
 
-  order_id: string;
+  @IsString() @IsNotEmpty() order_id: string;
 }

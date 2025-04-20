@@ -1,0 +1,14 @@
+{
+  "maxWorkers": 1,
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "./",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "moduleNameMapper": {
+    "^@repo/(.*)$": "<rootDir>/../../packages/$1"
+  },
+  "forceExit": true
+}
