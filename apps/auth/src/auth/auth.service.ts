@@ -11,12 +11,12 @@ export class AuthService {
     private userService: UsersService,
   ) {}
 
-  signInByUserId(id: string): { token: string; user: User } {
-    const user = this.userService.getUserById(id);
+  async signInByUserId(id: string): Promise<{ token: string; user: User }> {
+    const user: User = await this.userService.getUserById(id);
     if (!user) throw new NotFoundException('User not found');
 
     const token = this.jwtService.sign({
-      userId: user.id,
+      userId: user._id,
       role: user.role,
     });
 

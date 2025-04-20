@@ -1,41 +1,50 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import { User, UserRole } from '@repo/shared';
+import { User, UserRole, UserDocument } from '@repo/shared';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
-  private users: User[] = [];
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  onModuleInit() {
-    this.generateFakeUsers(10);
+  async onModuleInit() {
+    await this.userModel.deleteMany({});
+    await this.generateFakeUsers(10);
   }
 
-  getUserById(id: string): User | undefined {
-    return this.users.find((u) => u.id === id);
+  getUserById(id: string): Promise<User> {
+    return this.userModel.findOne({ _id: id });
   }
 
-  getUsers(): User[] {
-    return this.users;
+  getUsers(): Promise<User[]> {
+    return this.userModel.find();
   }
 
-  private generateFakeUsers(count: number) {
+  private async generateFakeUsers(count: number): Promise<User[]> {
     const locales: Array<'es' | 'de'> = ['es', 'de'];
+
+    const users: User[] = [];
 
     for (let i = 0; i < count; i++) {
       const locale = faker.helpers.arrayElement(locales);
       faker.setLocale(locale);
 
       const user: User = {
-        id: faker.datatype.uuid(),
         name: faker.name.fullName(),
         email: faker.internet.email(),
         country: locale === 'es' ? 'España' : 'Deutschland',
         role: faker.helpers.arrayElement([UserRole.CUSTOMER, UserRole.SELLER]),
       };
 
-      this.users.push(user);
+      users.push(user);
     }
+
+    const usersSaved = await this.userModel.insertMany(users);
+    const plainUsers: User[] = usersSaved.map((doc) => doc.toObject());
     console.log('🧪 Users fake generated:');
-    console.table(this.users);
+    console.table(plainUsers);
+
+    return plainUsers;
   }
 }

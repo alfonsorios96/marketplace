@@ -12,14 +12,15 @@ export class AuthController {
   ) {}
 
   @Get('users')
-  getUsers(): User[] {
+  async getUsers(): Promise<User[]> {
     return this.usersService.getUsers();
   }
 
   @Post('login')
-  login(@Body() body: UserPayload): { token: string; user: User } {
-    const { token, user } = this.authService.signInByUserId(body.userId);
-    return { token, user };
+  async login(
+    @Body() body: UserPayload,
+  ): Promise<{ token: string; user: User }> {
+    return await this.authService.signInByUserId(body.userId);
   }
 
   @MessagePattern('auth.verify-token')
