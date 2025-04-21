@@ -8,6 +8,18 @@ export enum UserRole {
   SELLER = 'SELLER',
 }
 
+export enum UserEvents {
+  LOGIN_REQUESTED = 'auth.verify',
+}
+
+export enum UserExchanges {
+  DEFAULT = 'users_exchange',
+}
+
+export enum UserQueus {
+  LOGIN = 'user_verify_queue',
+}
+
 @Schema({ timestamps: true })
 export class User {
   _id?: string;

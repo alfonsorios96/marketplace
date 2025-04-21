@@ -1,5 +1,4 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { User, UserPayload } from '@repo/shared';
 import { UsersService } from '../users/users.service';
@@ -21,10 +20,5 @@ export class AuthController {
     @Body() body: UserPayload,
   ): Promise<{ token: string; user: User }> {
     return await this.authService.signInByUserId(body.userId);
-  }
-
-  @MessagePattern('auth.verify-token')
-  verifyToken(@Payload() token: string): UserPayload | null {
-    return this.authService.verifyToken(token);
   }
 }
